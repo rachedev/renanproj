@@ -12,3 +12,5 @@ export const favorites = (state = [], action) => {
       return state;
   }
 };
+
+// made a mistake in committing to a previous commit title; this file when made should have been under the commit "Redux Adding Favorites"
