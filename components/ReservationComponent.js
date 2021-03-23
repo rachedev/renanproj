@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import {
   Text,
   View,
@@ -9,9 +9,10 @@ import {
   Button,
   Modal,
   Alert,
-} from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import * as Animatable from "react-native-animatable";
+} from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import * as Animatable from 'react-native-animatable';
+import * as Notifications from 'expo-notifications';
 
 class Reservation extends Component {
   constructor(props) {
@@ -27,7 +28,7 @@ class Reservation extends Component {
   }
 
   static navigationOptions = {
-    title: "Reserve Campsite",
+    title: 'Reserve Campsite',
   };
 
   // toggleModal() {
@@ -39,19 +40,24 @@ class Reservation extends Component {
     //this.toggleModal();
 
     Alert.alert(
-      "Begin Search?",
+      'Begin Search?',
       `Number of Campers: ${this.state.campers}
       \nHike-In? ${this.state.hikeIn}
       \nDate: ${this.state.date}`,
       [
         {
-          text: "Cancel",
+          text: 'Cancel',
           onPress: () => this.resetForm(),
-          style: "cancel",
+          style: 'cancel',
         },
         {
-          text: "OK",
-          onPress: () => this.resetForm(),
+          text: 'OK',
+          onPress: () => {
+            this.presentLocalNotification(
+              this.state.date.toLocaleDateString('en-US')
+            );
+            this.resetForm();
+          },
         },
       ],
       { cancelable: false }
@@ -66,6 +72,32 @@ class Reservation extends Component {
       showCalendar: false,
       showModal: false,
     });
+  }
+
+  async presentLocalNotification(date) {
+    function sendNotification() {
+      Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+          shouldShowAlert: true,
+        }),
+      });
+
+      Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Your Campsite Reservation Search',
+          body: `Search for ${date} requested`,
+        },
+        trigger: null,
+      });
+    }
+
+    let permissions = await Notifications.getPermissionsAsync();
+    if (!permissions.granted) {
+      permissions = await Notifications.requestPermissionsAsync();
+    }
+    if (permissions.granted) {
+      sendNotification();
+    }
   }
 
   render() {
@@ -94,7 +126,7 @@ class Reservation extends Component {
             <Switch
               style={styles.formItem}
               value={this.state.hikeIn}
-              trackColor={{ true: "#5637DD", false: null }}
+              trackColor={{ true: '#5637DD', false: null }}
               onValueChange={(value) => this.setState({ hikeIn: value })}
             />
           </View>
@@ -104,7 +136,7 @@ class Reservation extends Component {
               onPress={() =>
                 this.setState({ showCalendar: !this.state.showCalendar })
               }
-              title={this.state.date.toLocaleDateString("en-US")}
+              title={this.state.date.toLocaleDateString('en-US')}
               color="#5637DD"
               accessibilityLabel="Tap me to select a reservation date"
             />
@@ -112,7 +144,7 @@ class Reservation extends Component {
           {this.state.showCalendar && (
             <DateTimePicker
               value={this.state.date}
-              mode={"date"}
+              mode={'date'}
               display="default"
               onChange={(event, selectedDate) => {
                 selectedDate &&
@@ -166,10 +198,10 @@ class Reservation extends Component {
 
 const styles = StyleSheet.create({
   formRow: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     flex: 1,
-    flexDirection: "row",
+    flexDirection: 'row',
     margin: 20,
   },
   formLabel: {
