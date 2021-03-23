@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import {
   Text,
   View,
@@ -9,12 +9,13 @@ import {
   StyleSheet,
   Alert,
   PanResponder,
-} from "react-native";
-import { Card, Icon, Rating, Input } from "react-native-elements";
-import { connect } from "react-redux";
-import { baseUrl } from "../shared/baseUrl";
-import { postFavorite, postComment } from "../redux/ActionCreators";
-import * as Animatable from "react-native-animatable";
+  Share,
+} from 'react-native';
+import { Card, Icon, Rating, Input } from 'react-native-elements';
+import { connect } from 'react-redux';
+import { baseUrl } from '../shared/baseUrl';
+import { postFavorite, postComment } from '../redux/ActionCreators';
+import * as Animatable from 'react-native-animatable';
 
 const mapStateToProps = (state) => {
   return {
@@ -45,26 +46,26 @@ function RenderCampsite(props) {
       view.current
         .rubberBand(1000)
         .then((endState) =>
-          console.log(endState.finished ? "finished" : "canceled")
+          console.log(endState.finished ? 'finished' : 'canceled')
         );
     },
     onPanResponderEnd: (e, gestureState) => {
-      console.log("pan responder end", gestureState);
+      console.log('pan responder end', gestureState);
       if (recognizeDrag(gestureState)) {
         Alert.alert(
-          "Add Favorite",
-          "Are you sure you wish to add " + campsite.name + " to favorites?",
+          'Add Favorite',
+          'Are you sure you wish to add ' + campsite.name + ' to favorites?',
           [
             {
-              text: "Cancel",
-              style: "cancel",
-              onPress: () => console.log("Cancel Pressed"),
+              text: 'Cancel',
+              style: 'cancel',
+              onPress: () => console.log('Cancel Pressed'),
             },
             {
-              text: "OK",
+              text: 'OK',
               onPress: () =>
                 props.favorite
-                  ? console.log("Already set as a favorite")
+                  ? console.log('Already set as a favorite')
                   : props.markFavorite(),
             },
           ],
@@ -76,6 +77,19 @@ function RenderCampsite(props) {
       return true;
     },
   });
+
+  const shareCampsite = (title, message, url) => {
+    Share.share(
+      {
+        title: title,
+        message: `${title}: ${message} ${url}`,
+        url: url,
+      },
+      {
+        dialogTitle: 'Share ' + title,
+      }
+    );
+  };
 
   if (campsite) {
     return (
@@ -93,14 +107,14 @@ function RenderCampsite(props) {
           <Text style={{ margin: 10 }}>{campsite.description}</Text>
           <View style={styles.cardRow}>
             <Icon
-              name={props.favorite ? "heart" : "heart-o"}
+              name={props.favorite ? 'heart' : 'heart-o'}
               type="font-awesome"
               color="#f50"
               raised
               reverse
               onPress={() =>
                 props.favorite
-                  ? console.log("Already set as a favorite")
+                  ? console.log('Already set as a favorite')
                   : props.markFavorite()
               }
             />
@@ -111,6 +125,20 @@ function RenderCampsite(props) {
               raised
               reverse
               onPress={() => props.onShowModal()}
+            />
+            <Icon
+              name={'share'}
+              type="font-awesome"
+              color="#5637DD"
+              raised
+              reverse
+              onPress={() =>
+                shareCampsite(
+                  campsite.name,
+                  campsite.description,
+                  baseUrl + campsite.image
+                )
+              }
             />
           </View>
         </Card>
@@ -128,7 +156,7 @@ function RenderComments({ comments }) {
         <Rating
           startingValue={item.rating}
           imageSize={10}
-          style={{ alignItems: "flex-start", paddingVertical: "5%" }}
+          style={{ alignItems: 'flex-start', paddingVertical: '5%' }}
           readonly
         />
         <Text
@@ -157,8 +185,8 @@ class CampsiteInfo extends Component {
 
     this.state = {
       rating: 5,
-      author: "",
-      text: "",
+      author: '',
+      text: '',
       showModal: false,
     };
   }
@@ -181,8 +209,8 @@ class CampsiteInfo extends Component {
   resetForm() {
     this.setState({
       rating: 5,
-      author: "",
-      text: "",
+      author: '',
+      text: '',
       showModal: false,
     });
   }
@@ -192,11 +220,11 @@ class CampsiteInfo extends Component {
   }
 
   static navigationOptions = {
-    title: "Campsite Information",
+    title: 'Campsite Information',
   };
 
   render() {
-    const campsiteId = this.props.navigation.getParam("campsiteId");
+    const campsiteId = this.props.navigation.getParam('campsiteId');
     const campsite = this.props.campsites.campsites.filter(
       (campsite) => campsite.id === campsiteId
     )[0];
@@ -213,7 +241,7 @@ class CampsiteInfo extends Component {
         />
         <RenderComments comments={comments} />
         <Modal
-          animationType={"slide"}
+          animationType={'slide'}
           transparent={false}
           visible={this.state.showModal}
           onRequestClose={() => this.toggleModal()}
@@ -228,14 +256,14 @@ class CampsiteInfo extends Component {
             />
             <Input
               placeholder="Author"
-              leftIcon={{ type: "font-awesome", name: "user-o" }}
+              leftIcon={{ type: 'font-awesome', name: 'user-o' }}
               leftIconContainerStyle={{ paddingRight: 10 }}
               onChangeText={(author) => this.setState({ author: author })}
               value={this.state.author}
             />
             <Input
               placeholder="Comment"
-              leftIcon={{ type: "font-awesome", name: "comment-o" }}
+              leftIcon={{ type: 'font-awesome', name: 'comment-o' }}
               leftIconContainerStyle={{ paddingRight: 10 }}
               onChangeText={(text) => this.setState({ text: text })}
               value={this.state.text}
@@ -269,14 +297,14 @@ class CampsiteInfo extends Component {
 
 const styles = StyleSheet.create({
   cardRow: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     flex: 1,
-    flexDirection: "row",
+    flexDirection: 'row',
     margin: 20,
   },
   modal: {
-    justifyContent: "center",
+    justifyContent: 'center',
     margin: 20,
   },
 });
